@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{51C61D11-BD83-404C-8933-BF90909CF384}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Balanced</RootNamespace>
+    <AssemblyName>Balanced</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\BalancedObject.cs" />
+    <Compile Include="Helpers\BalancedAttributeHelper.cs" />
+    <Compile Include="Entities\Address.cs" />
+    <Compile Include="Entities\BankAccount.cs" />
+    <Compile Include="Entities\Callback.cs" />
+    <Compile Include="Entities\CallbackStatuses.cs" />
+    <Compile Include="Entities\Card.cs" />
+    <Compile Include="Entities\Credit.cs" />
+    <Compile Include="Entities\Customer.cs" />
+    <Compile Include="Entities\Debit.cs" />
+    <Compile Include="Entities\Event.cs" />
+    <Compile Include="Entities\Hold.cs" />
+    <Compile Include="Entities\Marketplace.cs" />
+    <Compile Include="Entities\PagedList.cs" />
+    <Compile Include="Entities\Refund.cs" />
+    <Compile Include="Entities\Verification.cs" />
+    <Compile Include="Exceptions\BalancedError.cs" />
+    <Compile Include="Exceptions\BalancedException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BalancedRest.cs" />
+    <Compile Include="Services\BalancedServices.cs" />
+    <Compile Include="Helpers\BalancedJsonSerializer.cs" />
+    <Compile Include="Services\BankAccountService.cs" />
+    <Compile Include="Services\CallbackService.cs" />
+    <Compile Include="Services\CardService.cs" />
+    <Compile Include="Services\CreditService.cs" />
+    <Compile Include="Services\CustomerService.cs" />
+    <Compile Include="Services\DebitService.cs" />
+    <Compile Include="Services\EventService.cs" />
+    <Compile Include="Services\HoldService.cs" />
+    <Compile Include="Services\MarketplaceService.cs" />
+    <Compile Include="Services\RefundService.cs" />
+    <Compile Include="Services\VerificationService.cs" />
+    <Compile Include="Structs\BankAccountType.cs" />
+    <Compile Include="Structs\BankAccountVerificationStatus.cs" />
+    <Compile Include="Structs\CallbackStatus.cs" />
+    <Compile Include="Structs\CategoryType.cs" />
+    <Compile Include="Structs\CreditState.cs" />
+    <Compile Include="Structs\CallbackMethod.cs" />
+    <Compile Include="Structs\CreditStatus.cs" />
+    <Compile Include="Structs\DebitStatus.cs" />
+    <Compile Include="Structs\PostalCodeStatus.cs" />
+    <Compile Include="Structs\RefundStatus.cs" />
+    <Compile Include="Structs\SecurityCodeStatus.cs" />
+    <Compile Include="Structs\StatusCode.cs" />
+    <Compile Include="Structs\VerificationState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
