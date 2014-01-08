@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Balanced.Config;
 using Balanced.Entities;
 using Balanced.Exceptions;
 using Balanced.Services;
@@ -11,38 +11,25 @@ namespace Balanced.Test
     public class VerificationTest
     {
 
-        public BankAccount BankAccount { get; set; }
-
         public VerificationTest()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
-            BankAccount = bankAccountService.Get(new BankAccount { Id = BalancedSettings.BankAccountTestId });
+            BalancedSettings.Init(BalancedTestKeys.BalancedCfg);
         }
         [TestMethod]
         public void Connect_Verification_Rest()
         {
-            var verificationService = new VerificationService(BalancedSettings.Secret);
-            var items = verificationService.List(BankAccount);
+            var verificationService = new VerificationService();
+            var items = verificationService.List();
 
             Assert.IsNotNull(items);
-
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(BalancedException))]
-        public void Connect_Bank_Account_Rest_Fake()
-        {
-            var verificationService = new VerificationService(BalancedSettings.FakeSecret);
-            //should throws an exception
-            verificationService.List(BankAccount);
         }
 
         [TestMethod]
         public void Create_Verification()
         {
-            var verificationService = new VerificationService(BalancedSettings.Secret);
-            var customerService = new CustomerService(BalancedSettings.Secret);
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var verificationService = new VerificationService();
+            var customerService = new CustomerService();
+            var bankAccountService = new BankAccountService();
 
             var bankAccountSent = new BankAccount
             {
@@ -58,7 +45,8 @@ namespace Balanced.Test
             {
                 Name = "Mandoyo Inc",
                 SSNLast4 = "4977",
-                DateOfBirth = DateTime.Parse("15/03/1981"),
+                DobYear = "1981",
+                DobMonth = "03",
                 Email = "cto-office@mandoyo.com",
                 Phone = "+34 667123456",
                 BusinessName = "Mandoyo",
@@ -67,20 +55,22 @@ namespace Balanced.Test
 
             var customerReceived = customerService.Create(customerSent);
 
-            customerService.AddBankAccount(customerReceived, bankAccountReceived);
+            customerService.AssociateBankAccount(customerReceived.Customers[0], bankAccountReceived.BankAccounts[0]);
 
-            var verification = verificationService.Create(bankAccountReceived);
+            var verification = verificationService.Create(bankAccountReceived.BankAccounts[0]);
 
             Assert.IsNotNull(verification);
-            Assert.IsNotNull(verification.Id);
+            Assert.IsNotNull(verification.Verifications);
+            Assert.IsTrue(verification.Verifications.Count > 0);
+            Assert.IsNotNull(verification.Verifications[0].Href);
         }
 
         [TestMethod]
         [ExpectedException(typeof(BalancedException))]
         public void Create_Verification_WithOut_Customer()
         {
-            var verificationService = new VerificationService(BalancedSettings.Secret);
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var verificationService = new VerificationService();
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Name = "Mandoyo Inc",
@@ -90,31 +80,49 @@ namespace Balanced.Test
             };
             var bankAccountReceived = bankAccountService.Create(bankAccountSent);
 
-            var verification = verificationService.Create(bankAccountReceived);
+            var verification = verificationService.Create(bankAccountReceived.BankAccounts[0]);
 
             Assert.IsNotNull(verification);
-            Assert.IsNotNull(verification.Id);
+            Assert.IsNotNull(verification.Verifications);
+            Assert.IsTrue(verification.Verifications.Count > 0);
+            Assert.IsNotNull(verification.Verifications[0].Href);
         }
 
         [TestMethod]
         public void Get_Verification()
         {
-            var verificationService = new VerificationService(BalancedSettings.Secret);
+            var verificationService = new VerificationService();
 
-            var verification = verificationService.Get(BankAccount, new Verification { Id = BalancedSettings.VerificationTestId });
+            var verification = verificationService.Get(new Verification { Id = BalancedTestKeys.VerificationTestId });
 
             Assert.IsNotNull(verification);
-            Assert.IsTrue(verification.Id == BalancedSettings.VerificationTestId);
+            Assert.IsNotNull(verification.Verifications);
+            Assert.IsTrue(verification.Verifications.Count > 0);
+            Assert.IsTrue(verification.Verifications[0].Id == BalancedTestKeys.VerificationTestId);
         }
 
         [TestMethod]
         public void List_Verifications()
         {
-            var verificationService = new VerificationService(BalancedSettings.Secret);
+            var verificationService = new VerificationService();
 
-            var verifications = verificationService.List(BankAccount);
+            var verifications = verificationService.List();
 
             Assert.IsNotNull(verifications);
+        }
+
+        [TestMethod]
+        public void Confirm_Verification()
+        {
+            var verificationService = new VerificationService();
+
+            var verification = verificationService.Get(new Verification { Id = BalancedTestKeys.VerificationTestId });
+
+            var confirmedVerification = verificationService.Confirm(verification.Verifications[0], 1, 1);
+
+            Assert.IsNotNull(confirmedVerification);
+            Assert.IsNotNull(confirmedVerification.Verifications);
+            Assert.IsTrue(confirmedVerification.Verifications.Count > 0);
         }
     }
 }

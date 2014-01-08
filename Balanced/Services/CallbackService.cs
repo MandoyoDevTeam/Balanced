@@ -6,21 +6,18 @@ using Newtonsoft.Json.Linq;
 
 namespace Balanced.Services
 {
-    public class CallbackService : BalancedServices<Callback>
+    public class CallbackService : BalancedServices<Callback, CallbackList>
     {
 
         public override string RootUri
         {
             get
             {
-                return string.Format("/{0}/callbacks", BalancedHttpRest.Version);
+                return string.Format("/callbacks");
             }
         }
 
-        public CallbackService(string secret) : base(secret)
-        {}
-
-        public new Callback Create(Callback callback)
+        public new CallbackList Create(Callback callback)
         {
             if (callback == null) throw new ArgumentNullException("callback", "Callback can not be null");
             if (string.IsNullOrEmpty(callback.Url)) throw new ArgumentNullException("callback", "Callback Url can not be null");
@@ -31,15 +28,15 @@ namespace Balanced.Services
                 { BalancedAttributeHelper.GetPropertyAttributes(typeof(Callback).GetProperty("Method")), BalancedAttributeHelper.GetEnumAttributes(typeof(CallbackMethod).GetMember(callback.Method.ToString())) },
             };
 
-            return BalancedJsonSerializer.DeSerialize<Callback>(BalancedHttpRest.Post(string.Format("{0}", RootUri), parameters));
+            return BalancedJsonSerializer.DeSerialize<CallbackList>(BalancedHttpRest.Post(string.Format("{0}", RootUri), parameters));
         }
 
-        public new Callback Get(Callback callback)
+        public new CallbackList Get(Callback callback)
         {
             return base.Get(callback);
         }
 
-        public new PagedList<Callback> List(int limit = 10, int offset = 0)
+        public new CallbackList List(int limit = 10, int offset = 0)
         {
             return base.List(limit, offset);
         }

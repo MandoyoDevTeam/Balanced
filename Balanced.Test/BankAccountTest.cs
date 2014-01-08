@@ -1,4 +1,5 @@
 ﻿using System;
+using Balanced.Config;
 using Balanced.Structs;
 using Balanced.Entities;
 using Balanced.Exceptions;
@@ -10,29 +11,25 @@ namespace Balanced.Test
     [TestClass]
     public class BankAccountTest
     {
+        public BankAccountTest()
+        {
+            BalancedSettings.Init(BalancedTestKeys.BalancedCfg);
+        }
+
         [TestMethod]
         public void Connect_Bank_Account_Rest()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var items = bankAccountService.List();
 
             Assert.IsNotNull(items);
 
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(BalancedException))]
-        public void Connect_Bank_Account_Rest_Fake()
-        {
-            var bankAccountService = new BankAccountService(BalancedSettings.FakeSecret);
-            //should throws an exception
-            bankAccountService.List();
-        }
+        }        
 
         [TestMethod]
         public void Create_Bank_Account()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Name = "Mandoyo Inc",
@@ -43,18 +40,20 @@ namespace Balanced.Test
             var bankAccountReceived = bankAccountService.Create(bankAccountSent);
 
             Assert.IsNotNull(bankAccountReceived);
-            Assert.IsNotNull(bankAccountReceived.Id);
-            Assert.IsTrue(String.Compare(bankAccountReceived.Name,bankAccountSent.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(String.Compare(bankAccountReceived.AccountNumber, bankAccountSent.AccountNumber, StringComparison.InvariantCultureIgnoreCase) != 0);
-            Assert.IsTrue(String.Compare(bankAccountReceived.RoutingNumber, bankAccountSent.RoutingNumber, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(bankAccountReceived.Type == bankAccountSent.Type);
+            Assert.IsNotNull(bankAccountReceived.BankAccounts);
+            Assert.IsTrue(bankAccountReceived.BankAccounts.Count > 0);
+            Assert.IsNotNull(bankAccountReceived.BankAccounts[0].Id);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].Name, bankAccountSent.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].AccountNumber, bankAccountSent.AccountNumber, StringComparison.InvariantCultureIgnoreCase) != 0);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].RoutingNumber, bankAccountSent.RoutingNumber, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(bankAccountReceived.BankAccounts[0].Type == bankAccountSent.Type);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Create_Bank_Account_Missing_Required_Field()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Name = "Mandoyo Inc",
@@ -69,7 +68,7 @@ namespace Balanced.Test
         [TestMethod]
         public void Create_Bank_Account_Bad_Bank_Name()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Name = "Mandoyo Inc",
@@ -81,40 +80,44 @@ namespace Balanced.Test
             var bankAccountReceived = bankAccountService.Create(bankAccountSent);
 
             Assert.IsNotNull(bankAccountReceived);
-            Assert.IsNotNull(bankAccountReceived.Id);
-            Assert.IsTrue(String.Compare(bankAccountReceived.Name, bankAccountSent.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(String.Compare(bankAccountReceived.BankName, bankAccountSent.BankName, StringComparison.InvariantCultureIgnoreCase) != 0);
-            Assert.IsTrue(String.Compare(bankAccountReceived.AccountNumber, bankAccountSent.AccountNumber, StringComparison.InvariantCultureIgnoreCase) != 0);
-            Assert.IsTrue(String.Compare(bankAccountReceived.RoutingNumber, bankAccountSent.RoutingNumber, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(bankAccountReceived.Type == bankAccountSent.Type);
+            Assert.IsNotNull(bankAccountReceived.BankAccounts);
+            Assert.IsTrue(bankAccountReceived.BankAccounts.Count > 0);
+            Assert.IsNotNull(bankAccountReceived.BankAccounts[0].Id);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].Name, bankAccountSent.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].BankName, bankAccountSent.BankName, StringComparison.InvariantCultureIgnoreCase) != 0);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].AccountNumber, bankAccountSent.AccountNumber, StringComparison.InvariantCultureIgnoreCase) != 0);
+            Assert.IsTrue(String.Compare(bankAccountReceived.BankAccounts[0].RoutingNumber, bankAccountSent.RoutingNumber, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(bankAccountReceived.BankAccounts[0].Type == bankAccountSent.Type);
         }
 
         
         [TestMethod]
         public void Get_Bank_Account()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
-            var bankAccount = bankAccountService.Get(new BankAccount { Id = BalancedSettings.BankAccountTestId });
+            var bankAccountService = new BankAccountService();
+            var bankAccount = bankAccountService.Get(new BankAccount { Id = BalancedTestKeys.BankAccountTestId });
 
             Assert.IsNotNull(bankAccount);
-            Assert.IsTrue(bankAccount.Id == BalancedSettings.BankAccountTestId);
+            Assert.IsNotNull(bankAccount.BankAccounts);
+            Assert.IsTrue(bankAccount.BankAccounts.Count > 0);
+            Assert.IsTrue(bankAccount.BankAccounts[0].Id == BalancedTestKeys.BankAccountTestId);
         }
 
         [TestMethod]
         public void List_Bank_Account()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var items = bankAccountService.List();
 
             Assert.IsNotNull(items);
-            Assert.IsNotNull(items.Items);
-            Assert.IsTrue(items.Items.Count > 0);
+            Assert.IsNotNull(items.BankAccounts);
+            Assert.IsTrue(items.BankAccounts.Count > 0);
         }
 
         [TestMethod]
         public void Delete_Bank_Account()
         {
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Name = "Mandoyo Inc",
@@ -124,7 +127,7 @@ namespace Balanced.Test
             };
             var bankAccountReceived = bankAccountService.Create(bankAccountSent);
 
-            var result = bankAccountService.Delete(bankAccountReceived);
+            var result = bankAccountService.Delete(bankAccountReceived.BankAccounts[0]);
 
             Assert.IsTrue(result);
         }
@@ -134,7 +137,7 @@ namespace Balanced.Test
         public void Delete_Fake_Bank_Account()
         {
 
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var bankAccountService = new BankAccountService();
             var bankAccountSent = new BankAccount
             {
                 Id = "Mandoyo_Inc_Fake",

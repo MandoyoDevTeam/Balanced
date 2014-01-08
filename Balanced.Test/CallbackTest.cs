@@ -1,4 +1,5 @@
 ﻿using System;
+using Balanced.Config;
 using Balanced.Structs;
 using Balanced.Entities;
 using Balanced.Exceptions;
@@ -11,10 +12,15 @@ namespace Balanced.Test
     public class CallbackTest
     {
 
+        public CallbackTest()
+        {
+            BalancedSettings.Init(BalancedTestKeys.BalancedCfg);
+        }
+
         [TestMethod]
         public void Connect_Success()
         {
-            var callbackService = new CallbackService(BalancedSettings.Secret);
+            var callbackService = new CallbackService();
             var items = callbackService.List();
 
             Assert.IsNotNull(items);
@@ -22,19 +28,9 @@ namespace Balanced.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(BalancedException))]
-        public void Connect_FakeSecret()
-        {
-            var callbackService = new CallbackService(BalancedSettings.FakeSecret);
-            //should throws an exception
-            callbackService.List();
-
-        }
-
-        [TestMethod]
         public void Create_Callback()
         {
-            var callbackService = new CallbackService(BalancedSettings.Secret);
+            var callbackService = new CallbackService();
             
             var callbackSent = new Callback
             {
@@ -45,25 +41,29 @@ namespace Balanced.Test
             var callbackReceived = callbackService.Create(callbackSent);
 
             Assert.IsNotNull(callbackReceived);
-            Assert.IsNotNull(callbackReceived.Id);
-            Assert.IsTrue(String.Compare(callbackReceived.Url, callbackSent.Url, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(callbackReceived.Method == callbackSent.Method);
+            Assert.IsNotNull(callbackReceived.Callbacks);
+            Assert.IsTrue(callbackReceived.Callbacks.Count > 0);
+            Assert.IsNotNull(callbackReceived.Callbacks[0].Id);
+            Assert.IsTrue(String.Compare(callbackReceived.Callbacks[0].Url, callbackSent.Url, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(callbackReceived.Callbacks[0].Method == callbackSent.Method);
         }
 
         [TestMethod]
         public void Get_Callback()
         {
-            var callbackService = new CallbackService(BalancedSettings.Secret);
-            var callback = callbackService.Get(new Callback { Id = BalancedSettings.CallbackTestId });
+            var callbackService = new CallbackService();
+            var callback = callbackService.Get(new Callback { Id = BalancedTestKeys.CallbackTestId });
 
             Assert.IsNotNull(callback);
-            Assert.IsTrue(callback.Id == BalancedSettings.CallbackTestId);
+            Assert.IsNotNull(callback.Callbacks);
+            Assert.IsTrue(callback.Callbacks.Count > 0);
+            Assert.IsTrue(callback.Callbacks[0].Id == BalancedTestKeys.CallbackTestId);
         }
 
         [TestMethod]
         public void List_Callbacks()
         {
-            var callbackService = new CallbackService(BalancedSettings.Secret);
+            var callbackService = new CallbackService();
             var items = callbackService.List();
 
             Assert.IsNotNull(items);
@@ -72,7 +72,7 @@ namespace Balanced.Test
         [TestMethod]
         public void Delete_Callback()
         {
-            var callbackService = new CallbackService(BalancedSettings.Secret);
+            var callbackService = new CallbackService();
 
             var callbackSent = new Callback
             {
@@ -82,7 +82,7 @@ namespace Balanced.Test
 
             var callbackReceived = callbackService.Create(callbackSent);
 
-            var result = callbackService.Delete(callbackReceived);
+            var result = callbackService.Delete(callbackReceived.Callbacks[0]);
 
             Assert.IsTrue(result);
         }
@@ -92,7 +92,7 @@ namespace Balanced.Test
         public void Delete_Fake_Callback()
         {
 
-            var callbackService = new CallbackService(BalancedSettings.Secret);
+            var callbackService = new CallbackService();
             var callbackSent = new Callback
             {
                 Id = "Mandoyo_Inc_Fake",

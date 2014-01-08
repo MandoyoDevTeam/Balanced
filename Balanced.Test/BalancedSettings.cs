@@ -1,14 +1,12 @@
 ﻿
 namespace Balanced.Test
 {
-    public static class BalancedSettings
+    public static class BalancedTestKeys
     {
 
         public const string Secret = "ak-test-1H6GfXxbp2IR8QU9YQftMy31FS8QHuR2M";
 
         public const string FakeSecret = "ak-test-fakefortest";
-
-        public const string MarketplaceTestId = "TEST-MPTzwbMORPOnCChkb9gvnuD";
 
         public const string BankAccountTestId = "BA6bhXoZ6eYu5Lx8IbkumfnN";
 
@@ -27,6 +25,8 @@ namespace Balanced.Test
         public const string CallbackTestId = "CB7MuhR3OfBDE9BaKcwTy0uI";
 
         public const string CustomerTestId = "CUTBu0s1ISCVZ08h1tn4xTF";
-        
+
+        public const string BalancedCfg = "Balanced.config";
+
     }
 }

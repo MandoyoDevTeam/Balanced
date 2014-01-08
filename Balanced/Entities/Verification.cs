@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Balanced.Structs;
 using Newtonsoft.Json;
 
@@ -11,16 +10,16 @@ namespace Balanced.Entities
         [JsonProperty("attempts")]
         public int Attempts { get; set; }
 
-        [JsonProperty("created_at")]
-        public DateTime CreatedAt { get; set; }
-
-        [JsonProperty("updated_at")]
-        public DateTime UpdatedAt { get; set; }
-
-        [JsonProperty("remaining_attempts")]
+        [JsonProperty("attempts_remaining")]
         public int AttemptsLeft { get; set; }
 
-        [JsonProperty("state")]
-        public VerificationState State { get; set; }      
+        [JsonProperty("verification_status", NullValueHandling = NullValueHandling.Ignore)]
+        public Status VerificationStatus { get; set; }
+
+        [JsonProperty("deposit_status", NullValueHandling = NullValueHandling.Ignore)]
+        public Status DepositStatus { get; set; }
+
+        [JsonProperty("links")]
+        public VerificationLink Links { get; set; }
     }
 }

@@ -1,22 +1,22 @@
-﻿
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Balanced.Structs
 {
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CallbackMethod
     {
-        [JsonProperty("unknown")]
+        [EnumMember(Value = "unknown")]
         Unknown = 0,
 
-        [JsonProperty("post")]
+        [EnumMember(Value = "post")]
         Post = 1,
-        
-        [JsonProperty("put")]
+
+        [EnumMember(Value = "put")]
         Put = 2,
 
-        [JsonProperty("get")]
+        [EnumMember(Value = "get")]
         Get = 3,
 
     }

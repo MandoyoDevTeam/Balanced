@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using Balanced.Config;
 using Balanced.Exceptions;
 using Balanced.Helpers;
 using Newtonsoft.Json.Linq;
@@ -16,75 +17,16 @@ namespace Balanced.Services
 
         #region · Public Properties ·
         
-        public Encoding Encoding
+       public string UserAgent
         {
             get
             {
-                return Encoding.UTF8;
-            }
-        }
-
-        public string ContentType
-        {
-            get
-            {
-                return string.Format("application/json");
-            }
-        }
-
-        public string AcceptType {
-            get
-            {
-                return "application/json";
-            }
-        }
-
-        public string Agent
-        {
-            get
-            {
-                return "balanced-mandoyo";
-            }
-        }
-
-        public string Version
-        {
-            get
-            {
-                return "v1";
-            }
-        }
-
-        public string UserAgent
-        {
-            get
-            {
-                return string.Format("{0}/{1}", Agent, Version);
-            }
-        }
-
-        public string Secret { get; set; }
-
-        public Uri BaseUri
-        {
-            get
-            {
-                return new Uri("https://api.balancedpayments.com");
+                return string.Format("{0}/{1}", BalancedSettings.AcceptType, BalancedSettings.Version);
             }
         }
 
         #endregion
         
-        #region · Default Constructor ·
-
-        public BalancedRest(String secret)
-        {
-            if (string.IsNullOrEmpty(secret)) throw new ArgumentNullException("secret", "You must define a secret key");
-            Secret = secret;
-        }
-
-        #endregion
-
         #region · Public Methods ·
 
         public string Get(string uri)
@@ -119,7 +61,7 @@ namespace Balanced.Services
 
         private string Request(string method, string relativeUri, NameValueCollection query, JObject data) 
         {
-            var builder = new UriBuilder(BaseUri);
+            var builder = new UriBuilder(BalancedSettings.BalancedUrl);
 
             if (query != null)
             {
@@ -141,14 +83,14 @@ namespace Balanced.Services
             var req = (HttpWebRequest)WebRequest.Create(uri);
             req.UserAgent = UserAgent;
             req.Method = method;
-            req.Accept = AcceptType;
-            req.Headers.Add("Accept-Charset", Encoding.WebName);
-            if (Secret != null) req.Headers.Add("Authorization","Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(Secret + ":")));
+            req.Accept = BalancedSettings.AcceptType;
+            req.Headers.Add("Accept-Charset", BalancedSettings.Encoding.WebName);
+            if (BalancedSettings.Secret != null) req.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(BalancedSettings.Secret + ":")));
 
             if (data != null)
             {
-                req.ContentType = ContentType;
-                byte[] content = Encoding.GetBytes(BalancedJsonSerializer.Serialize(data));
+                req.ContentType = BalancedSettings.ContentType;
+                byte[] content = BalancedSettings.Encoding.GetBytes(BalancedJsonSerializer.Serialize(data));
                 req.ContentLength = content.Length;
                 using (Stream stream = req.GetRequestStream())
                 {
@@ -198,7 +140,7 @@ namespace Balanced.Services
                     body = reader.ReadToEnd();
                 }
             }
-            if (response.ContentType != AcceptType || body.Length == 0) return null;
+            if (response.ContentType != BalancedSettings.AcceptType || body.Length == 0) return null;
 
             if(body.Contains("errors"))
                 return BalancedJsonSerializer.DeSerialize<BalancedError>(BalancedJsonSerializer.Serialize(JObject.Parse(body)["errors"][0]));

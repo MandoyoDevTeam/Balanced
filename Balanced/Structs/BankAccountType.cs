@@ -1,18 +1,19 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Balanced.Structs
 {
-    [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum BankAccountType
     {
-        [JsonProperty("unknown")]
+        [EnumMember(Value = "unknown")]
         Unknown = 0,
 
-        [JsonProperty("checking")]
+        [EnumMember(Value = "checking")]
         Checking = 1,
 
-        [JsonProperty("savings")]
+        [EnumMember(Value = "savings")]
         Savings = 2
     }
 }

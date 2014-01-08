@@ -2,26 +2,22 @@
 
 namespace Balanced.Services
 {
-    public class EventService : BalancedServices<Event>
+    public class EventService : BalancedServices<Event, EventList>
     {
         public override string RootUri
         {
             get
             {
-                return string.Format("/{0}/events", BalancedHttpRest.Version);
+                return string.Format("/events");
             }
         }
 
-        public EventService(string secret) : base(secret)
-        {
-        }
-
-        public new Event Get(Event events)
+        public new EventList Get(Event events)
         {
             return base.Get(events);
         }
 
-        public new PagedList<Event> List(int limit = 10, int offset = 0)
+        public new EventList List(int limit = 10, int offset = 0)
         {
             return base.List(limit, offset);
         }

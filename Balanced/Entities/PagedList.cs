@@ -5,22 +5,18 @@ using Newtonsoft.Json;
 namespace Balanced.Entities
 {
     [DataContract]
-    [KnownType(typeof(BankAccount))]
-    [KnownType(typeof(Callback))]
-    [KnownType(typeof(Card))]
-    [KnownType(typeof(Credit))]
-    [KnownType(typeof(Customer))]
-    [KnownType(typeof(Debit))]
-    [KnownType(typeof(Event))]
-    [KnownType(typeof(Hold))]
-    [KnownType(typeof(Marketplace))]
-    [KnownType(typeof(Refund))]
-    [KnownType(typeof(Verification))]
-    public class PagedList<T> where T : BalancedObject
+    public class PagedList
     {
-        [JsonProperty("items")]
-        public List<T> Items { get; set; }
 
+        [JsonProperty("first")]
+        public string First { get; set; }
+
+        [JsonProperty("href")]
+        public string Href { get; set; }
+
+        [JsonProperty("last")]
+        public string Last { get; set; }
+        
         [JsonProperty("limit")]
         public int Limit { get; set; }
 
@@ -30,16 +26,10 @@ namespace Balanced.Entities
         [JsonProperty("total")]
         public int Total { get; set; }
 
-        [JsonProperty("first_uri")]
-        public string FirstUri { get; set; }
+       [JsonProperty("next")]
+        public string Next { get; set; }
 
-        [JsonProperty("last_uri")]
-        public string LastUri { get; set; }
-
-        [JsonProperty("next_uri")]
-        public string NextUri { get; set; }
-
-        [JsonProperty("previous_uri")]
-        public string PreviousUri { get; set; }
+        [JsonProperty("previous")]
+        public string Previous { get; set; }
     }
 }

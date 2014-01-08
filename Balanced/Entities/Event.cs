@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Balanced.Helpers;
 using Newtonsoft.Json;
 
 namespace Balanced.Entities
@@ -10,15 +11,16 @@ namespace Balanced.Entities
         public CallbackStatuses CallbackStatuses { get; set; }
 
         [JsonProperty("entity")]
-        public Verification Entity { get; set; }
-
-        [JsonProperty("callbacks_uri")]
-        public string CallbacksUri { get; set; }
+        [JsonConverter(typeof(EntitySerializer))]
+        public BalancedList Entity { get; set; }
 
         [JsonProperty("occurred_at")]
         public string OccurredAt { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }    
+        public string Type { get; set; }
+
+        [JsonProperty("links")]
+        public EventLink Links { get; set; }
     }
 }

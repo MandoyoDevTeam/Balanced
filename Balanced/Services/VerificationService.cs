@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Globalization;
 using Balanced.Entities;
 using Balanced.Helpers;
 using Newtonsoft.Json.Linq;
 
 namespace Balanced.Services
 {
-    public class VerificationService : BalancedServices<Verification>
+    public class VerificationService : BalancedServices<Verification, VerificationList>
     {
 
         public override string RootUri
@@ -18,46 +16,29 @@ namespace Balanced.Services
             }
         }
 
-        public VerificationService(string secret) : base(secret)
-        {
-        }
-
-        public Verification Create(BankAccount bankAccount)
+        public VerificationList Create(BankAccount bankAccount)
         {
             if(bankAccount == null) throw new ArgumentNullException("bankAccount","Bank Account can not be null");
-            if (string.IsNullOrEmpty(bankAccount.VerificationsUri)) throw new ArgumentNullException("bankAccount", "Bank Account Verification Uri can not be null");
+            if (string.IsNullOrEmpty(bankAccount.Href)) throw new ArgumentNullException("bankAccount", "Bank Account Verification Uri can not be null");
 
-            return BalancedJsonSerializer.DeSerialize<Verification>(BalancedHttpRest.Post(string.Format("{0}", bankAccount.VerificationsUri), null));
+            return BalancedJsonSerializer.DeSerialize<VerificationList>(BalancedHttpRest.Post(string.Format("{0}{1}", bankAccount.Href, RootUri), null));
         }
 
-        public Verification Get(BankAccount bankAccount, Verification verification)
+        public new VerificationList Get(Verification verification)
         {
-            if (bankAccount == null) throw new ArgumentNullException("bankAccount", "Bank Account can not be null");
-            if (string.IsNullOrEmpty(bankAccount.VerificationUri)) throw new ArgumentNullException("bankAccount", "Bank Account Verification Uri can not be null");
-
-            return BalancedJsonSerializer.DeSerialize<Verification>(BalancedHttpRest.Get(bankAccount.VerificationUri, null));
+            return base.Get(verification);
 
         }
 
-        public PagedList<Verification> List(BankAccount bankAccount, int limit = 10, int offset = 0)
+        public new VerificationList List(int limit = 10, int offset = 0)
         {
-            if (bankAccount == null) throw new ArgumentNullException("bankAccount", "Bank Account can not be null");
-            if (string.IsNullOrEmpty(bankAccount.VerificationUri)) throw new ArgumentNullException("bankAccount", "Bank Account Verification Uri can not be null");
-
-            var parameters = new NameValueCollection
-            {
-                { "limit", limit.ToString(CultureInfo.InvariantCulture) }, 
-                { "offset", offset.ToString(CultureInfo.InvariantCulture) }
-            };
-
-            return BalancedJsonSerializer.DeSerialize<PagedList<Verification>>(BalancedHttpRest.Get(bankAccount.VerificationsUri, parameters));
-
+            return base.List(limit, offset);
         }
 
-        public Verification Confirm(Verification verification, int amount1, int amount2)
+        public VerificationList Confirm(Verification verification, int amount1, int amount2)
         {
             if (verification == null) throw new ArgumentNullException("verification", "Verification can not be null");
-            if (string.IsNullOrEmpty(verification.Uri)) throw new ArgumentNullException("verification", "Verification Uri can not be null");
+            if (string.IsNullOrEmpty(verification.Href)) throw new ArgumentNullException("verification", "Verification Uri can not be null");
             if(amount1 <= 0)throw new ArgumentNullException("amount1", "Amount1 can not be null");
             if (amount2 <= 0) throw new ArgumentNullException("amount2", "Amount1 can not be null");
 
@@ -67,7 +48,7 @@ namespace Balanced.Services
                 { BalancedAttributeHelper.GetPropertyAttributes(typeof(BankAccount).GetProperty("amount_2")), amount2 },
             };
 
-            return BalancedJsonSerializer.DeSerialize<Verification>(BalancedHttpRest.Put(string.Format("{0}", verification.Uri), parameters));
+            return BalancedJsonSerializer.DeSerialize<VerificationList>(BalancedHttpRest.Put(string.Format("{0}", verification.Href), parameters));
         }
     }
 }

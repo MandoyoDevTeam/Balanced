@@ -1,4 +1,5 @@
 ﻿using System;
+using Balanced.Config;
 using Balanced.Entities;
 using Balanced.Exceptions;
 using Balanced.Services;
@@ -10,46 +11,46 @@ namespace Balanced.Test
     [TestClass]
     public class CustomerTest
     {
+
+        public CustomerTest()
+        {
+            BalancedSettings.Init(BalancedTestKeys.BalancedCfg);
+        }
+
         [TestMethod]
         public void Connect_Customer_Rest()
         {
-            var bankAccountService = new CustomerService(BalancedSettings.Secret);
+            var bankAccountService = new CustomerService();
             var items = bankAccountService.List();
 
             Assert.IsNotNull(items);
 
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BalancedException))]
-        public void Connect_Customer_Rest_Fake()
-        {
-            var bankAccountService = new CustomerService(BalancedSettings.FakeSecret);
-            //should throws an exception
-            bankAccountService.List();
-        }
-
-        [TestMethod]
+       [TestMethod]
         public void Create_Empty_Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
+            var customerService = new CustomerService();
             var customerSent = new Customer();
             
             var customerReceived = customerService.Create(customerSent);
 
             Assert.IsNotNull(customerReceived);
-            Assert.IsNotNull(customerReceived.Id);
+            Assert.IsNotNull(customerReceived.Customers);
+            Assert.IsTrue(customerReceived.Customers.Count > 0);
+            Assert.IsNotNull(customerReceived.Customers[0].Id);
         }
 
         [TestMethod]
         public void Create_Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
+            var customerService = new CustomerService();
             var customerSent = new Customer
             {
                 Name = "Mandoyo Inc",
                 SSNLast4 = "4977",
-                DateOfBirth = DateTime.Parse("15/03/1981") ,
+                DobYear = "1981",
+                DobMonth = "03",
                 Email = "cto-office@mandoyo.com",
                 Phone = "+34 667123456",
                 BusinessName = "Mandoyo",
@@ -67,51 +68,52 @@ namespace Balanced.Test
             var customerReceived = customerService.Create(customerSent);
 
             Assert.IsNotNull(customerReceived);
-            Assert.IsNotNull(customerReceived.Id);
-            
-            Assert.IsNotNull(customerReceived.Address);
-            Assert.IsTrue(string.Compare(customerSent.Address.State, customerReceived.Address.State, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(string.Compare(customerSent.Address.City, customerReceived.Address.City, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(string.Compare(customerSent.Address.CountryCode, customerReceived.Address.CountryCode, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(string.Compare(customerSent.Address.PostalCode, customerReceived.Address.PostalCode, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(string.Compare(customerSent.Address.Line1, customerReceived.Address.Line1, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsNotNull(customerReceived.Customers);
+            Assert.IsTrue(customerReceived.Customers.Count > 0);
+            Assert.IsNotNull(customerReceived.Customers[0].Id);
 
-            Assert.IsTrue(string.Compare(customerSent.Name, customerReceived.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(string.Compare(customerSent.SSNLast4, customerReceived.SSNLast4, StringComparison.InvariantCultureIgnoreCase) != 0);
-            Assert.IsTrue(string.Compare("xxxx", customerReceived.SSNLast4, StringComparison.InvariantCultureIgnoreCase) == 0);
-            Assert.IsTrue(customerReceived.DateOfBirth.HasValue);
-            Assert.IsTrue(string.Compare(string.Format("{0:yyyy-MM}", customerSent.DateOfBirth.Value), string.Format("{0:yyyy-MM}", customerReceived.DateOfBirth.Value), StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsNotNull(customerReceived.Customers[0].Address);
+            Assert.IsTrue(string.Compare(customerSent.Address.State, customerReceived.Customers[0].Address.State, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(customerSent.Address.City, customerReceived.Customers[0].Address.City, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(customerSent.Address.CountryCode, customerReceived.Customers[0].Address.CountryCode, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(customerSent.Address.PostalCode, customerReceived.Customers[0].Address.PostalCode, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(customerSent.Address.Line1, customerReceived.Customers[0].Address.Line1, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+            Assert.IsTrue(string.Compare(customerSent.Name, customerReceived.Customers[0].Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(customerSent.SSNLast4, customerReceived.Customers[0].SSNLast4, StringComparison.InvariantCultureIgnoreCase) != 0);
+            Assert.IsTrue(string.Compare("xxxx", customerReceived.Customers[0].SSNLast4, StringComparison.InvariantCultureIgnoreCase) == 0);
+            Assert.IsTrue(string.Compare(string.Format("{0}-{1}", customerSent.DobYear, customerSent.DobMonth), string.Format("{0}-{1}", customerReceived.Customers[0].DobYear, customerReceived.Customers[0].DobMonth), StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
         [TestMethod]
         public void Get_Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
-            var customer = customerService.Get(new Customer { Id = BalancedSettings.CustomerTestId });
+            var customerService = new CustomerService();
+            var customer = customerService.Get(new Customer { Id = BalancedTestKeys.CustomerTestId });
 
             Assert.IsNotNull(customer);
-            Assert.IsTrue(customer.Id == BalancedSettings.CustomerTestId);
+            Assert.IsNotNull(customer.Customers);
+            Assert.IsTrue(customer.Customers.Count > 0);
+            Assert.IsTrue(customer.Customers[0].Id == BalancedTestKeys.CustomerTestId);
         }
 
         [TestMethod]
         public void List_Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
-            var items = customerService.List();
+            var customerService = new CustomerService();
+            var customer = customerService.List();
 
-            Assert.IsNotNull(items);
-            Assert.IsNotNull(items.Items);
-            Assert.IsTrue(items.Items.Count > 0);
+            Assert.IsNotNull(customer);
+            Assert.IsNotNull(customer.Customers);
+            Assert.IsTrue(customer.Customers.Count > 0);
         }
 
         [TestMethod]
         public void Add_Card_To_Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
-            var marketplaceService = new MarketplaceService(BalancedSettings.Secret);
-            var marketplace = marketplaceService.Get(new Marketplace { Id = BalancedSettings.MarketplaceTestId });
+            var customerService = new CustomerService();
 
-            var cardService = new CardService(BalancedSettings.Secret, marketplace);
+            var cardService = new CardService();
 
             var cardSent = new Card
             {
@@ -121,11 +123,14 @@ namespace Balanced.Test
                 Name = "Mandoyo Inc",
                 SecurityCode = "123",
                 PhoneNumber = "666123456",
-                City = "New York",
-                PostalCode = "10005",
-                StreetAddress = "140 Broadway",
-                CountryCode = "USA",
-                IsValid = true
+                Address = new Address
+                {
+                    City = "New York",
+                    PostalCode = "10005",
+                    Line1 = "140 Broadway",
+                    CountryCode = "USA",
+                },
+                Verify = true
             };
             var cardReceived = cardService.Create(cardSent);
 
@@ -133,7 +138,8 @@ namespace Balanced.Test
             {
                 Name = "Mandoyo Inc",
                 SSNLast4 = "4977",
-                DateOfBirth = DateTime.Parse("15/03/1981"),
+                DobYear = "1981",
+                DobMonth = "03",
                 Email = "cto-office@mandoyo.com",
                 Phone = "+34 667123456",
                 BusinessName = "Mandoyo",
@@ -142,7 +148,7 @@ namespace Balanced.Test
 
             var customerReceived = customerService.Create(customerSent);
 
-            var customer = customerService.AddCard(customerReceived, cardReceived);
+            var customer = customerService.AssociateCard(customerReceived.Customers[0], cardReceived.Cards[0]);
 
             Assert.IsNotNull(customer);
         }
@@ -150,8 +156,8 @@ namespace Balanced.Test
         [TestMethod]
         public void Add_BankAccount_To__Customer()
         {
-            var customerService = new CustomerService(BalancedSettings.Secret);
-            var bankAccountService = new BankAccountService(BalancedSettings.Secret);
+            var customerService = new CustomerService();
+            var bankAccountService = new BankAccountService();
 
             var bankAccountSent = new BankAccount
             {
@@ -167,7 +173,8 @@ namespace Balanced.Test
             {
                 Name = "Mandoyo Inc",
                 SSNLast4 = "4977",
-                DateOfBirth = DateTime.Parse("15/03/1981"),
+                DobYear = "1981",
+                DobMonth = "03",
                 Email = "cto-office@mandoyo.com",
                 Phone = "+34 667123456",
                 BusinessName = "Mandoyo",
@@ -176,7 +183,7 @@ namespace Balanced.Test
 
             var customerReceived = customerService.Create(customerSent);
 
-            var customer = customerService.AddBankAccount(customerReceived, bankAccountReceived);
+            var customer = customerService.AssociateBankAccount(customerReceived.Customers[0], bankAccountReceived.BankAccounts[0]);
 
             Assert.IsNotNull(customer);
             

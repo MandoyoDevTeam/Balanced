@@ -8,17 +8,19 @@ namespace Balanced.Entities
     [DataContract]
     public class Card : BalancedObject
     {
-        [JsonProperty("brand")]
-        public string Brand { get; set; }
 
-        [JsonProperty("can_debit")]
-        public bool CanDebit { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
-        [JsonProperty("card_type")]
-        public string CardType { get; set; }
+        [JsonProperty("number")]
+        public string Number { get; set; }
 
-        [JsonProperty("created_at")]
-        public string CreatedAt { get; set; }
+
+        [JsonProperty("card_number")]
+        public string CardNumber { get; set; }
+
+        [JsonProperty("phone_number")]
+        public string PhoneNumber { get; set; }
 
         [JsonProperty("expiration_month")]
         public int ExpirationMonth { get; set; }
@@ -26,51 +28,46 @@ namespace Balanced.Entities
         [JsonProperty("expiration_year")]
         public int ExpirationYear { get; set; }
 
-        [JsonProperty("hash")]
-        public string Hash { get; set; }
-
-        [JsonProperty("is_valid")]
-        public bool IsValid { get; set; }
-
-        [JsonProperty("last_four")]
-        public int LastFourDigits { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("card_number")]
-        public string CardNumber { get; set; }
-
         [JsonProperty("security_code")]
         public string SecurityCode { get; set; }
 
-        [JsonProperty("phone_number")]
-        public string PhoneNumber { get; set; }
+        [JsonProperty("cvv")]
+        public string Cvv { get; set; }
 
-        [JsonProperty("city")]
-        public string City { get; set; }
+        [JsonProperty("cvv_match", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CvvMatch CvvMatch { get; set; }
 
-        [JsonProperty("postal_code")]
-        public string PostalCode { get; set; }
+        [JsonProperty("cvv_result")]
+        public string CvvResult { get; set; }
 
-        [JsonProperty("street_address")]
-        public string StreetAddress { get; set; }
+        [JsonProperty("address")]
+        public Address Address { get; set; }
 
-        [JsonProperty("country_code")]
-        public string CountryCode { get; set; }
+        [JsonProperty("avs_street_match", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AvsMatch StreetMatch { get; set; }
 
-        [JsonProperty("verify")]
-        public bool? Verify { get; set; }
+        [JsonProperty("avs_postal_match", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AvsMatch PostalMatch { get; set; }
+
+        [JsonProperty("avs_result")]
+        public string AvsResult { get; set; }
+
+        [JsonProperty("fingerprint")]
+        public string Fingerprint { get; set; }
+        
+        [JsonProperty("brand")]
+        public string Brand { get; set; }
 
         [JsonProperty("is_verified")]
         public bool? IsVerified { get; set; }
 
-        [JsonProperty("postal_code_check")]
-        [JsonConverter(typeof (StringEnumConverter))]
-        public PostalCodeStatus PostalCodeCheck { get; set; }
+        [JsonProperty("verify")]
+        public bool? Verify { get; set; }
 
-        [JsonProperty("security_code_check")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public SecurityCodeStatus SecurityCodeCheck { get; set; }
+        [JsonProperty("links")]
+        public CardLink Links { get; set; }
     }
 }

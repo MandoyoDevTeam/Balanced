@@ -16,11 +16,8 @@ namespace Balanced.Entities
         [JsonProperty("can_debit")]
         public bool CanDebit { get; set; }
 
-        [JsonProperty("created_at")]
-        public string CreatedOn { get; set; }
-
-        [JsonProperty("credits_uri")]
-        public string CreditsUri { get; set; }
+        [JsonProperty("can_credit")]
+        public bool CanCredit { get; set; }
 
         [JsonProperty("fingerprint")]
         public string Fingerprint { get; set; }
@@ -31,13 +28,14 @@ namespace Balanced.Entities
         [JsonProperty("routing_number")]
         public string RoutingNumber { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("account_type", NullValueHandling = NullValueHandling.Ignore)]
         public BankAccountType Type { get; set; }
 
-        [JsonProperty("verification_uri")]
-        public string VerificationUri { get; set; }
+        [JsonProperty("address")]
+        public Address Address { get; set; }
 
-        [JsonProperty("verifications_uri")]
-        public string VerificationsUri { get; set; }  
+        [JsonProperty("links")]
+        public BankAccountLink Links { get; set; }
+
     }
 }

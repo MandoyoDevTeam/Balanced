@@ -15,5 +15,6 @@ namespace Balanced.Helpers
             //json .net
             return JsonConvert.DeserializeObject<T>(text);
         }
+
     }
 }
